@@ -49,6 +49,5 @@ router.post('/request-password-reset', UserController.requestPasswordReset);
 router.post('/save-new-password', UserController.resetPassword);
 
 
-router.post('/ping', UserController.ping);
 
 export default router;
