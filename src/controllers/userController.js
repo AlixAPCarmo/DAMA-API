@@ -292,26 +292,7 @@ const UserController = {
       return res.status(statusCode).json({ ok: false, error: errorMessage });
     }
   },
-
-  //ping test
-  ping: async (req, res) => {
-    try {
-      const data = req.body;
-      const result = await UserService.ping(data);
-
-      return res.status(200).json({
-        ok: true,
-        data: result,
-        status: 200,
-        error: null,
-      });
-    } catch (error) {
-      return res.status(500).json({
-        ok: false,
-        data: [],
-        status: 500,
-        error: "Error pinging.",
-  });
+  
 };
 
 export default UserController;

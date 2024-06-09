@@ -7,11 +7,7 @@ import validateDelete from "../middleware/users/validations/validateDelete.js";
 
 const router = express.Router();
 
-router.post(
-  "/register",
-  validateRegister,
-  UserController.register
-);
+router.post("/register", validateRegister, UserController.register);
 router.post("/login", UserController.login);
 
 router.post("/logout", UserController.logout);
@@ -41,13 +37,10 @@ router.get(
   authRole(["Admin", "CEO", "Director", "Manager"]),
   UserController.getAllUsers
 );
-
 router.get("/verify-email/:token", UserController.verifyEmail);
 
-router.post('/request-password-reset', UserController.requestPasswordReset);
+router.post("/request-password-reset", UserController.requestPasswordReset);
 
-router.post('/save-new-password', UserController.resetPassword);
-
-
+router.post("/save-new-password", UserController.resetPassword);
 
 export default router;

@@ -1,7 +1,7 @@
 import User from "../models/userModel.js";
 import crypto from 'crypto';
-import bcrypt from 'bcryptjs';
-import { sendPasswordResetEmail } from '../utils/passwordResetUtil.js';
+import bcrypt from 'bcrypt';
+import { sendPasswordResetEmail } from '../utils/emailUtil.js';
 
 const saltRounds = parseInt(process.env.SALT_ROUNDS);
 
@@ -91,71 +91,67 @@ const UserService = {
     });
   },
 
-  // Request password reset
   async requestPasswordReset(email) {
     return new Promise((resolve, reject) => {
-      const token = crypto.randomBytes(20).toString('hex');
-      const expirationDate = new Date(Date.now() + 3600000); 
-  
+      const token = crypto.randomBytes(20).toString("hex");
+      const expirationDate = new Date(Date.now() + 3600000);
+
       User.findByEmail(email, async (err, user) => {
         if (err || !user) {
           console.error("findByEmail error or user not found:", err);
           reject("User not found or error fetching user.");
           return;
         }
-        await User.storeResetToken(email, token, expirationDate, async (err) => {
-          if (err) {
-            console.error("storeResetToken error:", err);
-            reject("Error storing reset token.");
-            return;
+        User.storeResetToken(
+          email,
+          token,
+          expirationDate,
+          async (err) => {
+            if (err) {
+              console.error("storeResetToken error:", err);
+              reject("Error storing reset token.");
+              return;
+            }
+            try {
+              console.log(`Password reset token generated: ${token}`);
+              await sendPasswordResetEmail(email, token);
+              console.log("Password reset email sent successfully");
+              resolve(true);
+            } catch (emailError) {
+              console.error("sendPasswordResetEmail error:", emailError);
+              reject("Error sending password reset email.");
+            }
           }
-          try {
-            await sendPasswordResetEmail(email, token);
-            console.log("Password reset email sent successfully");
-            resolve(true);
-          } catch (emailError) {
-            console.error("sendPasswordResetEmail error:", emailError);
-            reject("Error sending password reset email.");
-          }
-        });
+        );
       });
     });
   },
 
   // Reset password
   async resetPassword(token, newPassword) {
+    console.log(`resetPassword called with token: ${token} and newPassword: ${newPassword}`);
     const user = await User.findUserByResetToken(token);
     if (!user) {
-        throw new Error('TokenInvalid');
+      throw new Error("TokenInvalid");
     }
-    
+
     if (new Date() > new Date(user.token_expiration)) {
-        throw new Error('TokenExpired');
+      throw new Error("TokenExpired");
     }
-    
+
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
-    
-    const success = await User.updateUserPasswordAndInvalidateToken(user.user_id, hashedPassword);
+
+    const success = await User.updateUserPasswordAndInvalidateToken(
+      user.user_id,
+      hashedPassword
+    );
     if (!success) {
-        throw new Error('PasswordUpdateFailed');
+      throw new Error("PasswordUpdateFailed");
     }
-    
+
+    console.log("Password reset successfully");
     return true;
   },
-
-  ping: async (data) => {
-    return new Promise((resolve, reject) => {
-      User.ping(data, (err, result) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(result);
-        }
-      });
-    });
-  },
 };
-
-
 export default UserService;

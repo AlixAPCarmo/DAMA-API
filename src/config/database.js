@@ -50,9 +50,10 @@ CREATE TABLE IF NOT EXISTS users (
   email_verification_token VARCHAR(255),
   email_verified TINYINT(1) NOT NULL DEFAULT 0,
   role VARCHAR(50),
+  password_reset_token VARCHAR(255),
+  token_expiration TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;`;
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP) `;
 
 connection.query(createTableSql, (error) => {
   if (error) {

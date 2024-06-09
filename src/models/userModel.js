@@ -1,6 +1,6 @@
-import bcrypt from "bcryptjs";
+import bcrypt from "bcrypt";
 import connection from "../config/database.js";
-import { v4 as uuidv4 } from "uuid"; // For generating unique tokens
+import { v4 as uuidv4 } from "uuid";
 
 const saltRounds = parseInt(process.env.SALT_ROUNDS);
 
@@ -85,13 +85,14 @@ const User = {
   // Store password reset token
   storeResetToken(email, token, expirationDate, callback) {
     const sql = `UPDATE users SET password_reset_token = ?, token_expiration = ? WHERE email = ?`;
-    connection.query(sql, [token, expirationDate, email], callback);
-  },
-
-  // Reset password
-  resetPassword(token, newPassword, callback) {
-    const sql = `UPDATE users SET password = ? WHERE reset_token = ? AND token_expiration > NOW()`;
-    connection.query(sql, [newPassword, token], callback);
+    connection.query(sql, [token, expirationDate, email], (error, result) => {
+      if (error) {
+        console.error(`Error storing reset token for email ${email}:`, error);
+      } else {
+        console.log(`Reset token stored for email ${email}`);
+      }
+      callback(error, result);
+    });
   },
 
   findUserByResetToken(token) {
@@ -100,8 +101,10 @@ const User = {
         "SELECT * FROM users WHERE password_reset_token = ? AND token_expiration > NOW()";
       connection.query(sql, [token], (error, results) => {
         if (error) {
+          console.error(`Error finding user by reset token ${token}:`, error);
           reject(error);
         } else {
+          console.log(`User found for reset token ${token}`);
           resolve(results.length ? results[0] : null);
         }
       });
@@ -114,14 +117,17 @@ const User = {
         "UPDATE users SET password = ?, password_reset_token = NULL, token_expiration = NULL WHERE user_id = ?";
       connection.query(sql, [hashedPassword, user_id], (error, result) => {
         if (error) {
+          console.error(`Error updating password for user ${user_id}:`, error);
           reject(error);
         } else if (result.affectedRows === 0) {
+          console.error(`No rows updated for user ${user_id}`);
           reject(
             new Error(
               "No rows updated, possibly due to invalid user identifier."
             )
           );
         } else {
+          console.log(`Password updated successfully for user ${user_id}`);
           resolve(true);
         }
       });
