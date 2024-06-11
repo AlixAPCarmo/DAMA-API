@@ -1,7 +1,6 @@
 import UserService from "../services/userService.js";
 import passport from "../config/passport.js";
 import { sendVerificationEmail } from "../utils/emailUtil.js";
-import { sendPasswordResetEmail } from "../utils/passwordResetUtil.js";
 
 const UserController = {
   //register a new user
@@ -33,7 +32,7 @@ const UserController = {
         ok: false,
         status: 500,
         error: "Error registering user.",
-        message: error.message,
+        // message: error.message,
       });
     }
   },
@@ -240,10 +239,10 @@ const UserController = {
         .json({ ok: false, data: [], error: "Error verifying email." });
     }
   },
-
   // Request password reset
   async requestPasswordReset(req, res) {
     const { email } = req.body;
+    console.log(`Request password reset for email: ${email}`);
     try {
       const result = await UserService.requestPasswordReset(email);
       if (!result) {
@@ -262,17 +261,21 @@ const UserController = {
   // Reset password
   async resetPassword(req, res) {
     const { token, newPassword } = req.body;
-    console.log("resetPassword token:", token, "newPassword:", newPassword);
+    console.log(
+      `resetPassword called with token: ${token} and newPassword: ${newPassword}`
+    );
     try {
       const result = await UserService.resetPassword(token, newPassword);
       // Assuming result is true if successful
       if (result) {
-        return res.status(200).json({ ok: true, message: "Password reset successfully." });
+        return res
+          .status(200)
+          .json({ ok: true, message: "Password reset successfully." });
       }
     } catch (error) {
       let errorMessage = error.message; // Default error message
       let statusCode = 500; // Default to internal server error
-  
+
       // Example of handling specific custom error types or messages
       switch (error.message) {
         case "TokenInvalid":
@@ -288,11 +291,9 @@ const UserController = {
           statusCode = 400;
           break;
       }
-  
+
       return res.status(statusCode).json({ ok: false, error: errorMessage });
     }
   },
-  
 };
-
 export default UserController;

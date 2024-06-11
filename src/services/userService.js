@@ -132,6 +132,7 @@ const UserService = {
     console.log(`resetPassword called with token: ${token} and newPassword: ${newPassword}`);
     const user = await User.findUserByResetToken(token);
     if (!user) {
+      console.log("User not found for reset token");
       throw new Error("TokenInvalid");
     }
 

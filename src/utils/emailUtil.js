@@ -12,7 +12,7 @@ const transporter = nodemailer.createTransport({
 
 const sendVerificationEmail = async (to, token) => {
   const subject = "Email Verification";
-  const verificationUrl = `${process.env.BASE_URL}/verify-email/${token}`;
+  const verificationUrl = `${'https://86ff-2001-8a0-dd94-bf01-da3a-ddff-fee0-61fa.ngrok-free.app/api'}/verify-email/${token}`;
   const html = `
     <h1>Email Verification</h1>
     <p>Please verify your email by clicking on the link below:</p>
