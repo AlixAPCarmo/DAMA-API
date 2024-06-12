@@ -93,7 +93,7 @@ const UserService = {
 
   async requestPasswordReset(email) {
     return new Promise((resolve, reject) => {
-      const token = crypto.randomBytes(20).toString("hex");
+      const token = crypto.randomBytes(3).toString("hex");
       const expirationDate = new Date(Date.now() + 3600000);
 
       User.findByEmail(email, async (err, user) => {
