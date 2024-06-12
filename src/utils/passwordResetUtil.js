@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 
 const sendPasswordResetEmail = async (to, token) => {
   const subject = "Password Reset Request";
-  const resetUrl = `${process.env.BASE_URL}/reset-password/${token}`;
+  const resetUrl = `https://86ff-2001-8a0-dd94-bf01-da3a-ddff-fee0-61fa.ngrok-free.app/api/reset-password/${token}`;
   const html = `
     <h1>Password Reset Request</h1>
     <p>You have requested to reset your password. Click the link below to proceed:</p>
