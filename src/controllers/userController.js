@@ -242,6 +242,12 @@ const UserController = {
   // Request password reset
   async requestPasswordReset(req, res) {
     const { email } = req.body;
+    // check if email exists in the database
+    const user = await UserService.findByEmail(email);
+    if (!user) {
+      return res.status(404).json({ ok: false, error: "User not found." });
+    }
+
     console.log(`Request password reset for email: ${email}`);
     try {
       const result = await UserService.requestPasswordReset(email);
