@@ -3,7 +3,7 @@ import CelestialService from "../services/celestialService.js";
 const CelestialController = {
   getAll: async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user.user_id;  // Corrected field
       const celestials = await CelestialService.getAll(userId);
       res.status(200).json({
         ok: true,
@@ -21,7 +21,7 @@ const CelestialController = {
 
   create: async (req, res) => {
     try {
-      const userId = req.user.id;
+      const userId = req.user.user_id;  // Corrected field
       const celestialData = { ...req.body, userId };
 
       if (!celestialData.name) {
