@@ -3,7 +3,7 @@ import CelestialService from "../services/celestialService.js";
 const CelestialController = {
   getAll: async (req, res) => {
     try {
-      const userId = req.user.user_id;  // Corrected field
+      const userId = req.user.user_id; // Corrected field
       const celestials = await CelestialService.getAll(userId);
       res.status(200).json({
         ok: true,
@@ -21,7 +21,7 @@ const CelestialController = {
 
   create: async (req, res) => {
     try {
-      const userId = req.user.user_id;  // Corrected field
+      const userId = req.user.user_id; 
       const celestialData = { ...req.body, userId };
 
       if (!celestialData.name) {
@@ -34,7 +34,7 @@ const CelestialController = {
       const newCelestial = await CelestialService.create(celestialData);
       res.status(201).json({
         ok: true,
-        data: "Celestial object created successfully",
+        data: "Celestial object created successfully , id: " + newCelestial.insertId,
         error: null,
       });
     } catch (error) {
@@ -76,7 +76,11 @@ const CelestialController = {
     try {
       const celestialId = req.body.id;
       await CelestialService.delete(celestialId);
-      res.status(204).end();
+      res.status(204).json({
+        ok: true,
+        data: "Celestial object deleted successfully",
+        error: null,
+      });
     } catch (error) {
       res.status(500).json({
         ok: false,
