@@ -32,6 +32,14 @@ const CelestialModel = {
       callback
     );
   },
+
+  findbyUserandName: function (userId, name, callback) {
+    connection.query(
+      "SELECT * FROM celestial_objects WHERE user_id = ? AND name = ?",
+      [userId, name],
+      callback
+    );
+  },
 };
 
 export default CelestialModel;

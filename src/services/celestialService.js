@@ -48,6 +48,18 @@ const CelestialService = {
       });
     });
   },
+
+  findbyUserandName: function (userId, name) {
+    return new Promise((resolve, reject) => {
+      CelestialModel.findbyUserandName(userId, name, (error, results) => {
+        if (error) {
+          reject(error);
+          return;
+        }
+        resolve(results);
+      });
+    });
+  },
 };
 
 export default CelestialService;

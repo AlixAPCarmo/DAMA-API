@@ -31,6 +31,18 @@ const CelestialController = {
           error: "Name is required",
         });
       }
+
+      // check if celestial object already exists for user 
+      const existingCelestial = await CelestialService.findbyUserandName(userId, celestialData.name);
+
+      if (existingCelestial.length > 0) {
+        return res.status(400).json({
+          ok: false,
+          data: null,
+          error: "Celestial object already exists for user",
+        });
+      }
+      
       const newCelestial = await CelestialService.create(celestialData);
       res.status(201).json({
         ok: true,
@@ -76,7 +88,7 @@ const CelestialController = {
     try {
       const celestialId = req.body.id;
       await CelestialService.delete(celestialId);
-      res.status(204).json({
+      res.status(200).json({
         ok: true,
         data: "Celestial object deleted successfully",
         error: null,
@@ -86,6 +98,25 @@ const CelestialController = {
         ok: false,
         data: null,
         error: "Error deleting celestial object",
+      });
+    }
+  },
+
+  findbyUserAndName: async (req, res) => {
+    try {
+      const userId = req.user.user_id;
+      const name = req.body.name;
+      const celestial = await CelestialService.findbyUserandName(userId, name);
+      res.status(200).json({
+        ok: true,
+        data: celestial[0].id,
+        error: null,
+      });
+    } catch (error) {
+      res.status(500).json({
+        ok: false,
+        data: null,
+        error: "Error finding celestial object",
       });
     }
   },
